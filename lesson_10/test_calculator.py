@@ -1,4 +1,4 @@
-# pytest test_calculator.py
+# pytest test_calculator.py -v
 #  pytest test_calculator.py --alluredir=allure_results
 import pytest
 import allure
@@ -22,10 +22,12 @@ def browser():
 @allure.story("Тест калькулятора с задержкой")
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.title("Проверка работы калькулятора с задержкой 45 секунд")
-@allure.description("Тест проверяет корректность вычислений калькулятора с установленной задержкой")
+@allure.description("Тест проверяет корректность вычислений "
+                    "калькулятора с установленной задержкой")
 def test_calculator_with_delay(browser):
     with allure.step("Открыть страницу калькулятора"):
-        browser.get("https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html")
+        browser.get("https://bonigarcia.dev/selenium-webdriver-java/"
+                    "slow-calculator.html")
 
     with allure.step("Создать экземпляр Page Object"):
         calculator = CalculatorPage(browser)

@@ -49,7 +49,7 @@ class CalculatorPage:
     def get_result(self, timeout: int = 50) -> str:
         """Получает результат с калькулятора после выполнения вычислений.
 
-        :param timeout: int - максимальное время ожидания в секундах (по умолчанию 50)
+        :param timeout: int - макс время ожидания в секундах (по умолчанию 50)
         :return: str - результат вычислений
         :raises TimeoutException: если результат не появился за указанное время
         :raises NoSuchElementException: если элемент результата не найден

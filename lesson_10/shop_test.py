@@ -25,7 +25,7 @@ def browser():
 @allure.story("Проверка итоговой суммы заказа")
 @allure.severity(allure.severity_level.BLOCKER)
 @allure.title("Проверка корректности расчета итоговой суммы заказа")
-@allure.description("Тест проверяет, что итоговая сумма заказа рассчитывается корректно")
+@allure.description("Проверка, что сумма заказа рассчитывается корректно")
 def test_checkout_total(browser):
     with allure.step("Открыть страницу авторизации"):
         browser.get("https://www.saucedemo.com")
@@ -48,13 +48,15 @@ def test_checkout_total(browser):
     with allure.step("Оформить заказ"):
         checkout_page = cart_page.click_checkout_button()
         checkout_page.input_first_name("Светлана") \
-                      .input_last_name("Геарсимова") \
-                      .input_zip_code("12345") \
-                      .continue_to_overview()
+                     .input_last_name("Геарсимова") \
+                     .input_zip_code("12345") \
+                     .continue_to_overview()
 
     with allure.step("Проверить итоговую сумму заказа"):
         total = checkout_page.get_total_amount()
-        assert total == 58.29, f"Ожидаемая сумма: 58.29, получено: {total}"
+        expected = 58.29
+        assert total == expected, \
+            f"Ожидаемая сумма: 58.29, получено: {total}"
 
     with allure.step("Завершить оформление заказа"):
         checkout_page.complete_order()

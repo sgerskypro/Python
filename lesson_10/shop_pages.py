@@ -117,7 +117,10 @@ class ShoppingCartPage:
         :return: list - список названий товаров
         """
         items = self.wait.until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "inventory_item_name")))
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "inventory_item_name")
+            )
+        )
         return [item.text for item in items]
 
     @allure.step("Нажать кнопку оформления заказа")
@@ -151,7 +154,8 @@ class CheckoutPage:
         :return: CheckoutPage - текущий экземпляр страницы
         """
         self.wait.until(
-            EC.visibility_of_element_located((By.ID, "first-name"))).send_keys(first_name)
+            EC.visibility_of_element_located((By.ID, "first-name"))
+        ).send_keys(first_name)
         return self
 
     @allure.step("Ввести фамилию '{last_name}'")
@@ -190,7 +194,10 @@ class CheckoutPage:
         :return: float - итоговая сумма заказа
         """
         total_element = self.wait.until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "summary_total_label")))
+            EC.visibility_of_element_located(
+                (By.CLASS_NAME, "summary_total_label")
+            )
+        )
         return float(total_element.text.split("$")[1])
 
     @allure.step("Завершить оформление заказа")
