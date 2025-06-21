@@ -1,16 +1,16 @@
+# pytest test_03_shop.py -v
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-
 # Фикстура для настройки драйвера браузера
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome()
+    driver = webdriver.Firefox()
     driver.maximize_window()
     yield driver
     driver.quit()
-
 
 # Тест для проверки процесса покупки
 def test_purchase(driver):
@@ -27,18 +27,9 @@ def test_purchase(driver):
     login_button.click()
 
     # Добавление товаров в корзину
-    backpack_add_button = driver.find_element(
-        By.XPATH,
-        "//div[@class='inventory_item' and .//div[contains(text(), 'Sauce Labs Backpack')]]//button",
-    )
-    tshirt_add_button = driver.find_element(
-        By.XPATH,
-        "//div[@class='inventory_item' and .//div[contains(text(), 'Sauce Labs Bolt T-Shirt')]]//button",
-    )
-    onesie_add_button = driver.find_element(
-        By.XPATH,
-        "//div[@class='inventory_item' and .//div[contains(text(), 'Sauce Labs Onesie')]]//button",
-    )
+    backpack_add_button = driver.find_element(By.XPATH, "//div[@class='inventory_item' and .//div[contains(text(), 'Sauce Labs Backpack')]]//button")
+    tshirt_add_button = driver.find_element(By.XPATH, "//div[@class='inventory_item' and .//div[contains(text(), 'Sauce Labs Bolt T-Shirt')]]//button")
+    onesie_add_button = driver.find_element(By.XPATH, "//div[@class='inventory_item' and .//div[contains(text(), 'Sauce Labs Onesie')]]//button")
 
     backpack_add_button.click()
     tshirt_add_button.click()
@@ -69,6 +60,4 @@ def test_purchase(driver):
     total_cost_value = float(total_cost.split("$")[1])
 
     # Проверка итоговой суммы
-    assert (
-        total_cost_value == 58.29
-    ), f"Итоговая сумма должна быть 58.29, но получена {total_cost_value}"
+    assert total_cost_value == 58.29, f"Итоговая сумма должна быть 58.29, но получена {total_cost_value}"
