@@ -1,13 +1,14 @@
 # pytest test_crud.py -v
 # test_crud.py
 import pytest
-from sqlalchemy import create_engine, and_
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from UsersTable import User, Base
 
 # Используем ту же базу QA для тестов или создаем тестовую в той же структуре
-TEST_DATABASE_URL = "postgresql://sger.skypro:Skypro123456+d@localhost:5432/QA_test"
+TEST_DATABASE_URL = ("postgresql://sger.skypro:Skypro123456+d@"
+                     "localhost:5432/QA_test")
 
 
 @pytest.fixture(scope="module")
@@ -34,21 +35,18 @@ def db_session(db_engine):
 
 def test_create_user(db_session):
     # Тест создания пользователя
-    new_user = User(name="Test User", email="test@example.com")
+    new_user = User(user_email="test@example.com", subject_id=1)
     db_session.add(new_user)
     db_session.commit()
 
-    # Проверяем, что пользователь создан и не удален
+    # Проверяем, что пользователь создан
     user = db_session.query(User).filter(
-        and_(
-            User.email == "test@example.com",
-            User.deleted_at == None
-        )
+        User.user_email == "test@example.com"
     ).first()
 
     assert user is not None
-    assert user.name == "Test User"
-    assert user.email == "test@example.com"
+    assert user.user_email == "test@example.com"
+    assert user.subject_id == 1
 
     # Очистка
     db_session.delete(user)
@@ -57,73 +55,47 @@ def test_create_user(db_session):
 
 def test_update_user(db_session):
     # Создаем пользователя для теста
-    new_user = User(name="Update Test", email="update@example.com")
+    new_user = User(user_email="update@example.com", subject_id=1)
     db_session.add(new_user)
     db_session.commit()
 
     # Обновляем пользователя
     user = db_session.query(User).filter(
-        and_(
-            User.email == "update@example.com",
-            User.deleted_at == None
-        )
+        User.user_email == "update@example.com"
     ).first()
 
-    user.name = "Updated Name"
+    user.subject_id = 2
     db_session.commit()
 
     # Проверяем обновление
     updated_user = db_session.query(User).filter(
-        and_(
-            User.email == "update@example.com",
-            User.deleted_at == None
-        )
+        User.user_email == "update@example.com"
     ).first()
 
-    assert updated_user.name == "Updated Name"
+    assert updated_user.subject_id == 2
 
     # Очистка
     db_session.delete(updated_user)
     db_session.commit()
 
 
-def test_soft_delete_user(db_session):
-    # 1. Создаем тестового пользователя с уникальным email
+def test_get_user_with_subject(db_session):
+    # Создаем тестового пользователя
     test_email = f"test_{datetime.now().timestamp()}@example.com"
-    new_user = User(name="Test User", email=test_email)
+    new_user = User(user_email=test_email, subject_id=3)
     db_session.add(new_user)
     db_session.commit()
 
-    # 2. Проверяем создание
+    # Проверяем получение пользователя с subject_id
     user = db_session.query(User).filter(
-        and_(
-            User.email == test_email,
-            User.deleted_at == None
-        )
-    ).first()
-    assert user is not None, "Пользователь не был создан"
-
-    # 3. Мягкое удаление
-    user.soft_delete()
-    db_session.commit()
-
-    # 4. Проверяем мягкое удаление
-    deleted_user = db_session.query(User).filter(
-        User.email == test_email
+        User.user_email == test_email,
+        User.subject_id == 3
     ).first()
 
-    assert deleted_user is not None, "Пользователь должен остаться в базе"
-    assert deleted_user.deleted_at is not None, "Поле deleted_at должно быть установлено"
+    assert user is not None
+    assert user.user_email == test_email
+    assert user.subject_id == 3
 
-    # 5. Проверяем недоступность в обычных запросах
-    active_user = db_session.query(User).filter(
-        and_(
-            User.email == test_email,
-            User.deleted_at == None
-        )
-    ).first()
-    assert active_user is None, "Удалённый пользователь доступен в обычном запросе"
-
-    # 6. Очистка
-    db_session.query(User).filter(User.email == test_email).delete()
+    # Очистка
+    db_session.delete(user)
     db_session.commit()
